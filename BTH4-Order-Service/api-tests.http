@@ -1,0 +1,53 @@
+### Requires BTH3 running on localhost:8081 with product ID 2 and quantity >= 2.
+### If you deleted product ID 2, first POST a new product to BTH3 and replace the ID below.
+@baseUrl = http://localhost:8082
+
+### 1. Create order (201 Created)
+POST {{baseUrl}}/orders
+Content-Type: application/json
+
+{
+  "customerName": "Nguyen Van A",
+  "items": [
+    { "productId": 2, "quantity": 2 }
+  ]
+}
+
+### 2. List orders (200 OK)
+GET {{baseUrl}}/orders
+
+### 3. Get order (replace 1 with returned ID)
+GET {{baseUrl}}/orders/1
+
+### 4. Update a PENDING order (replace ID and product ID)
+PUT {{baseUrl}}/orders/1
+Content-Type: application/json
+
+{
+  "customerName": "Nguyen Van B",
+  "items": [ { "productId": 2, "quantity": 1 } ]
+}
+
+### 5. Confirm order (200 OK)
+PATCH {{baseUrl}}/orders/1/status
+Content-Type: application/json
+
+{ "status": "CONFIRMED" }
+
+### 6. Complete order (200 OK)
+PATCH {{baseUrl}}/orders/1/status
+Content-Type: application/json
+
+{ "status": "COMPLETED" }
+
+### 7. To test delete, create a DIFFERENT PENDING order, then replace 2 with its ID (204)
+DELETE {{baseUrl}}/orders/2
+
+### 8. Validation: out of stock (422, if quantity exceeds product's available stock)
+POST {{baseUrl}}/orders
+Content-Type: application/json
+
+{
+  "customerName": "Nguyen Van A",
+  "items": [ { "productId": 2, "quantity": 999999 } ]
+}
